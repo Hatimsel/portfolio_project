@@ -1,36 +1,41 @@
 import { v4 as uuidv4 } from 'uuid'
 
 export class User {
-    // id = ""
+    image = ''
     addresses = []
-    image = ""
+    reviews = []
     
     constructor(email, password, type) {
         this.email = email;
         this.password = password;
         this.type = type;
-        // this.id = uuidv4();
     }
 
     addAddress(address) {
         this.addAddress.push(address);
     }
 
-}
-
-export class Address {
-    constructor(title = '', address) {
-        this.title = title;
-        this.address = address;
+    addReview(review) {
+        this.reviews.push(review);
     }
 }
 
 export class Category {
     image = ''
+
     constructor(title, description = '') {
         this.title = title;
         this.description = description;
     }
+
+    // addProduct(product) {
+    //     this.products.push(product);
+    // }
+
+    // deleteProduct(product) {
+    //     this.products = this.products
+    //                     .filter(item => item !== product);
+    // }
 }
 
 export class Product {
@@ -38,51 +43,47 @@ export class Product {
     category = ''
     description  = ''
 
-    constructor(title, price) {
-        // this.id = uuidv4();
+    constructor(title, price, userId) {
         this.title = title;
         this.price = price;
+        this.userId = userId;
     }
 
     addDescription(description) {
         this.description = description;
     }
+
+    addCategory(category) {
+        this.category = category;
+    }
 }
 
 export class Order {
+    shippedAt = '';
+    deliveredAt = '';
+
     constructor(productId, userId) {
-        // this.id = uuidv4();
         this.productId = productId;
         this.userId = userId;
         this.status = 'Processing';
+        this.placedAt = new Date();
     }
 
     isShipped() {
         this.status = 'Shipped';
+        this.shippedAt = new Date();
     }
 
     isDelivered() {
         this.status = 'Delivered';
+        this.deliveredAt = new Date();
     }
 }
 
-// const user = new User('hatim', 'selmun', 'seller');
-// console.log(user);
-
-// const address = new Address('Home', 'st12. assilah');
-// console.log(address);
-
-// const product = new Product('Burger', 5);
-// console.log(product);
-
-// const order = new Order(product.id, user.id);
-// console.log(order);
-// order.isShipped();
-// console.log(order);
-// order.isDelivered();
-// console.log(order);
-
-// const category = new Category('Fast Food');
-// console.log(category);
-
-// module.exports = User;
+export class Review {
+    constructor(orderId, feedback, stars) {
+        this.orderId = orderId;
+        this.feedback = feedback;
+        this.stars = stars;
+    }
+}

@@ -170,10 +170,11 @@ export default class UserController {
       const session = dbClient.sessions.findOne({
         token
       });
-      const user = dbClient.userCollection.findOne({
-        _id: session.userId
+      const productsCursor = dbClient.productCollection.find({
+        userId: session.userId
       });
-      return res.status(200).send(user.products);
+      const products = await productsCursor.toArray();
+      return res.status(200).send(products);
     } catch (err) {
       console.error(err);
       return res.status(500).send({
@@ -189,10 +190,11 @@ export default class UserController {
       const session = dbClient.sessions.findOne({
         token
       });
-      const user = dbClient.userCollection.findOne({
-        _id: session.userId
+      const ordersCursor = dbClient.orderCollection.find({
+        userId: session.userId
       });
-      return res.status(200).send(user.orders);
+      const orders = await ordersCursor.toArray();
+      return res.status(200).send(orders);
     } catch (err) {
       console.error(err);
       return res.status(500).send({

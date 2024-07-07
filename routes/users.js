@@ -1,7 +1,6 @@
 import express from 'express';
 import UserController from '../controllers/userController.js';
 import { isAuthenticated } from '../app.js';
-import { User } from '../controllers/models.js';
 
 const userRouter = express.Router();
 
