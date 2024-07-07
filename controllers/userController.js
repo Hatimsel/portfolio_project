@@ -1,4 +1,4 @@
-import sha1 from 'sha1';
+import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db.js';
 import { User } from './models.js';
@@ -22,13 +22,13 @@ export default class UserController {
       return res.status(400).send({ error: 'Already exist' });
     }
 
-    const hashedPass = sha1(password);
+    const hashedPass = await bcrypt.hash(password, 10);
     const user = new User(email, hashedPass, type);
     try {
       const newUser = await dbClient.userCollection
         .insertOne(user);
 
-      return res.status(201).send({ id: newUser.insertedId, email, type });
+      return res.status(201).redirect('/home');
     } catch (err) {
       console.log(err);
       return res.status(401).send('Failed to add user');
@@ -42,7 +42,7 @@ export default class UserController {
         const user = await dbClient.userCollection.findOne(
           { email }
         );
-        if (user.password === sha1(password)) {
+        if (bcrypt.compare(password, user.password)) {
           const token = uuidv4();
           await dbClient.db.collection('sessions').insertOne({
             userId: user._id,
@@ -63,28 +63,55 @@ export default class UserController {
     const token = req.cookies.token;
 
     try {
-        // const user = await dbClient.db.collection('sessions').findOne(token);
-        await dbClient.db.collection('sessions').deleteOne(token);
+        await dbClient.db.collection('sessions').deleteOne({
+          token
+        });
         res.clearCookie('token');
-        return res.status(200).redirect('/login');
+        return res.status(200).send({
+          Message: 'logged out'
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).send({ error: "Something went wrong" });
     }
   }
 
-  static async getUser(req, res) {
-    const { id } = req.params;
+  static async userProfile(req, res) {
+    return res.status(200).send({
+      message: "User Profile"
+    });
+    // const { token } = req.cookies;
 
+    // try {
+    //     const session = await dbClient.db.collection('sessions').findOne({
+    //       token
+    //     });
+    //     const user = await dbClient.userCollection.findOne(
+    //       { _id: session.userId },
+    //       { projection: { password: 0 } }
+    //     );
+    //     if (!user) {
+    //       return res.status(404).send({ error: "Unauthorized" });
+    //     }
+    //     return res.status(200).send(user);
+    // } catch (err) {
+    //     console.error(err);
+    //     return res.status(500).send({ error: "Unauthorized" });
+    // }
+  }
+
+  static async allUsers(req, res) {
     try {
-        const user = await dbClient.userCollection.findOne(
-          { _id: new ObjectId(id) },
+        const usersCursor = dbClient.userCollection.find(
+          {},
           { projection: { password: 0 } }
         );
-        if (user) {
-            return res.status(200).send(user);
+        const users = await usersCursor.toArray();
+
+        if (users) {
+            return res.status(200).send(users);
         } else {
-            return res.status(404).send({ error: "User not found" });
+            return res.status(404).send({ error: "No results found" });
         }
     } catch (err) {
         console.error(err);
@@ -114,31 +141,15 @@ export default class UserController {
     // }
   }
 
-  static async allUsers(req, res) {
-    try {
-        const usersCursor = dbClient.userCollection.find(
-          {},
-          { projection: { password: 0 } }
-        );
-        const users = await usersCursor.toArray();
-
-        if (users) {
-            return res.status(200).send(users);
-        } else {
-            return res.status(404).send({ error: "No results found" });
-        }
-    } catch (err) {
-        console.error(err);
-        return res.status(500).send({ error: "Server Error" });
-    }
-  }
-
   static async deleteUser(req, res) {
-    const { id } = req.params;
+    const { token } = req.cookies;
+    // const { id } = req.params;
 
     try {
+      const session = await dbClient.db.collection('sessions')
+                      .findOne({ token });
       dbClient.userCollection.deleteOne({
-        _id: new ObjectId(id)
+        _id: session.userId
       }).then((result) => {
         console.log(result);
         return res.status(203).send({ Message: `User deleted successfully` });
