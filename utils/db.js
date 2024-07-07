@@ -38,6 +38,7 @@ class DBClient {
             this.client = await MongoClient.connect(this.url, { useUnifiedTopology: true });
             this.isConnected = true;
             this.db = this.client.db(this.database);
+            this.sessions = this.db.collection('sessions');
             this.userCollection = this.db.collection('user');
             this.addressCollection = this.db.collection('address');
             this.categoryCollection = this.db.collection('category');

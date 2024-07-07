@@ -162,4 +162,61 @@ export default class UserController {
       return res.status(500).send({ error: 'Server error' });
     }
   }
+
+  static async getProducts(req, res) {
+    const { token } = req.cookies;
+
+    try {
+      const session = dbClient.sessions.findOne({
+        token
+      });
+      const user = dbClient.userCollection.findOne({
+        _id: session.userId
+      });
+      return res.status(200).send(user.products);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({
+        error: "Server error"
+      });
+    }
+  }
+
+  static async getOrders(req, res) {
+    const { token } = req.cookies;
+
+    try {
+      const session = dbClient.sessions.findOne({
+        token
+      });
+      const user = dbClient.userCollection.findOne({
+        _id: session.userId
+      });
+      return res.status(200).send(user.orders);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({
+        error: "Server error"
+      });
+    }
+  }
+
+  static async getReviews(req, res) {
+    const { token } = req.cookies;
+
+    try {
+      const session = dbClient.sessions.findOne({
+        token
+      });
+      const user = dbClient.userCollection.findOne({
+        _id: session.userId
+      });
+      return res.status(200).send(user.reviews);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({
+        error: "Server error"
+      });
+    }
+  }
 }
