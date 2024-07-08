@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db.js';
 import { User, Product, Order, Review, Category } from './models.js';
 import { v4 as uuidv4 } from 'uuid';
+import redisClient from '../utils/redis.js';
 
 export default class UserController {
   static async register(req, res) {
@@ -44,10 +45,11 @@ export default class UserController {
         );
         if (bcrypt.compare(password, user.password)) {
           const token = uuidv4();
-          await dbClient.db.collection('sessions').insertOne({
-            userId: user._id,
-            token
-          });
+          await redisClient.set(token, user._id.toString());
+          // await dbClient.db.collection('sessions').insertOne({
+          //   userId: user._id,
+          //   token
+          // });
           res.cookie('token', token);
           return res.status(200).redirect('/home');
         } else {
@@ -63,9 +65,10 @@ export default class UserController {
     const token = req.cookies.token;
 
     try {
-        await dbClient.db.collection('sessions').deleteOne({
-          token
-        });
+        await redisClient.del(token);
+        // await dbClient.db.collection('sessions').deleteOne({
+        //   token
+        // });
         res.clearCookie('token');
         return res.status(200).send({
           Message: 'logged out'
@@ -80,11 +83,12 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-      const session = await dbClient.sessions.findOne({
-        token
-      });
+      const userId = await redisClient.get(token);
+      // const session = await dbClient.sessions.findOne({
+      //   token
+      // });
       const user = await dbClient.userCollection.findOne(
-        { _id: session.userId },
+        { _id: new ObjectId(userId) },
         { projection: { password: 0 }
       });
       return res.status(200).send(user);
@@ -160,10 +164,11 @@ export default class UserController {
     // const { id } = req.params;
 
     try {
-      const session = await dbClient.db.collection('sessions')
-                      .findOne({ token });
+      const userId = await redisClient.get(token);
+      // const session = await dbClient.db.collection('sessions')
+      //                 .findOne({ token });
       dbClient.userCollection.deleteOne({
-        _id: session.userId
+        _id: new ObjectId(userId)
       }).then((result) => {
         console.log(result);
         return res.status(203).send({ Message: `User deleted successfully` });
@@ -212,11 +217,12 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-      const session = await dbClient.sessions.findOne({
-        token
-      });
+      const userId = await redisClient.get(token);
+      // const session = await dbClient.sessions.findOne({
+      //   token
+      // });
       const productsCursor = dbClient.productCollection.find({
-        userId: session.userId
+        userId: new ObjectId(userId)
       });
       const products = await productsCursor.toArray();
       return res.status(200).send(products);
@@ -232,11 +238,12 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-      const session = await dbClient.sessions.findOne({
-        token
-      });
+      const userId = await redisClient.get(token);
+      // const session = await dbClient.sessions.findOne({
+      //   token
+      // });
       const ordersCursor = dbClient.orderCollection.find({
-        userId: session.userId
+        userId: new ObjectId(userId)
       });
       const orders = await ordersCursor.toArray();
       return res.status(200).send(orders);
@@ -252,11 +259,12 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-      const session = dbClient.sessions.findOne({
-        token
-      });
+      const userId = await redisClient.get(token);
+      // const session = dbClient.sessions.findOne({
+      //   token
+      // });
       const user = dbClient.userCollection.findOne({
-        _id: session.userId
+        _id: new ObjectId(userId)
       });
       return res.status(200).send(user.reviews);
     } catch (err) {
@@ -271,11 +279,12 @@ export default class UserController {
     const { title, price } = req.body;
     const { token } = req.cookies;
     try {
-        const session = await dbClient.sessions.findOne({
-            token
-        });
+      const userId = await redisClient.get(token);
+        // const session = await dbClient.sessions.findOne({
+        //     token
+        // });
         const product = new Product(title, price);
-        product.userId = session.userId;
+        product.userId = new ObjectId(userId);
         const newProduct = await dbClient.productCollection.insertOne(product);
         if (!newProduct) {
             return res.status(403).send(
@@ -332,11 +341,12 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-        const session = await dbClient.sessions.findOne({
-            token
-        });
+      const userId = await redisClient.get(token);
+        // const session = await dbClient.sessions.findOne({
+        //     token
+        // });
 
-        const newOrder = new Order(productId, session.userId);
+        const newOrder = new Order(productId, new ObjectId(userId));
         await dbClient.orderCollection.insertOne(newOrder);
 
         return res.status(201).send({
@@ -355,14 +365,14 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-        const session = await dbClient.sessions.findOne({
-            token
-        });
+      const userId = await redisClient.get(token);
+        // const session = await dbClient.sessions.findOne({
+        //     token
+        // });
         dbClient.orderCollection.findOne({
             _id: new ObjectId(id),
-            userId: session.userId
+            userId: new ObjectId(userId)
         }).then((data) => {
-            console.log(data);
             return res.status(200).send(data);
         });
     } catch (err) {
@@ -379,7 +389,6 @@ export default class UserController {
     dbClient.orderCollection.deleteOne({
         _id: new ObjectId(id)
     }).then((data) => {
-        console.log(data);
         return res.status(200).send({
             Message: 'Order deleted successfully'
         });

@@ -1,4 +1,5 @@
 import express from 'express';
+import { ObjectId } from 'mongodb';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/users.js';
@@ -6,6 +7,7 @@ import categoryRouter from './routes/categories.js';
 import productRouter from './routes/products.js';
 import orderRouter from './routes/orders.js';
 import dbClient from './utils/db.js';
+import redisClient from './utils/redis.js';
 
 const app = express();
 
@@ -23,14 +25,15 @@ export async function isAuthenticated(req, res, next) {
     const { token } = req.cookies;
 
     try {
-        const session = await dbClient.db.collection('sessions').findOne({
-            token
-        });
-        if (!session) return res.status(403).send({
+        const userId = await redisClient.get(token);
+        // const session = await dbClient.db.collection('sessions').findOne({
+        //     token
+        // });
+        if (!userId) return res.status(403).send({
             error: "Unauthorized"
         });
         const user = await dbClient.userCollection.findOne(
-            { _id: session.userId },
+            { _id: new ObjectId(userId) },
             { projection: { password: 0 } }
         );
         if (!user) return res.status(403).send({
