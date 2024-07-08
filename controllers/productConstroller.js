@@ -5,8 +5,13 @@ import { Product } from './models.js';
 export default class ProductController  {
     static async postProduct(req, res) {
         const { title, price } = req.body;
+        const { token } = req.cookies;
         try {
+            const session = await dbClient.sessions.findOne({
+                token
+            });
             const product = new Product(title, price);
+            product.userId = session.userId;
             const newProduct = await dbClient.productCollection.insertOne(product);
             if (!newProduct) {
                 return res.status(403).send(

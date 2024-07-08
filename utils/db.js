@@ -44,6 +44,7 @@ class DBClient {
             this.categoryCollection = this.db.collection('category');
             this.productCollection = this.db.collection('product');
             this.orderCollection = this.db.collection('order');
+            this.reviewCollection = this.db.collection('review');
         } catch (err) {
             console.error('Failed to connect to MongoDB:', err);
         }

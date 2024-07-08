@@ -5,20 +5,25 @@ import { Order } from './models.js';
 export default class OrderController {
     static async postOrder(req, res) {
         const { productId, userId } = req.body;
-        const newOrder = new Order(productId, userId);
+        const { token } = req.cookies;
 
-        dbClient.orderCollection.insertOne(newOrder)
-            .then((data) => {
-                console.log(data);
-                return res.status(201).send({
-                    Message: 'Order placed successffully'
-                });
-            }).catch((err) => {
-                console.error(err);
-                return res.status(400).send({
-                    error: 'A problem occurred'
-                });
+        try {
+            const session = await dbClient.sessions.findOne({
+                token
             });
+
+            const newOrder = new Order(productId, session.userId);
+            await dbClient.orderCollection.insertOne(newOrder);
+
+            return res.status(201).send({
+                Message: "Order placed successfully"
+            });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send({
+                error: "Operation failed"
+            });
+        }
     }
 
     static async getOrder(req, res) {
@@ -51,12 +56,12 @@ export default class OrderController {
             const session = await dbClient.sessions.findOne({
                 token
             });
-            const user = await dbClient.userCollection.findOne({
-                _id: session.userId
-            });
+            // const user = await dbClient.userCollection.findOne({
+            //     _id: session.userId
+            // });
 
-            const ordersCursor = await dbClient.orderCollection.findOne({
-                userId: user._id
+            const ordersCursor = dbClient.orderCollection.find({
+                userId: session.userId
             });
 
             const orders = await ordersCursor.toArray();

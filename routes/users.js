@@ -20,9 +20,23 @@ userRouter.delete('/deleteprofile', isAuthenticated, UserController.deleteUser);
 
 userRouter.get('/myproducts', isAuthenticated, UserController.getProducts);
 
+userRouter.get('/myproducts/:id', isAuthenticated, UserController.getProduct);
+
+userRouter.post('/newproduct', isAuthenticated, UserController.newProduct);
+
+userRouter.delete('/myproducts/:id', isAuthenticated, UserController.deleteProduct);
+
 userRouter.get('/myorders', isAuthenticated, UserController.getOrders);
 
+userRouter.get('/myorders/:id', isAuthenticated, UserController.getOrder);
+
+userRouter.post('/neworder', isAuthenticated, UserController.newOrder);
+
+userRouter.delete('/myorders/:id', isAuthenticated, UserController.deleteOrder);
+
 userRouter.get('/myreviews', isAuthenticated, UserController.getReviews);
+
+userRouter.post('/newreview', isAuthenticated, UserController.newReview);
 
 export default userRouter;
 // export userRouter;

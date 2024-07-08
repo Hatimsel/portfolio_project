@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db.js';
-import { User } from './models.js';
+import { User, Product, Order, Review } from './models.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class UserController {
@@ -77,9 +77,23 @@ export default class UserController {
   }
 
   static async userProfile(req, res) {
-    return res.status(200).send({
-      message: "User Profile"
-    });
+    const { token } = req.cookies;
+
+    try {
+      const session = await dbClient.sessions.findOne({
+        token
+      });
+      const user = await dbClient.userCollection.findOne(
+        { _id: session.userId },
+        { projection: { password: 0 }
+      });
+      return res.status(200).send(user);
+    } catch (err) {
+      console.error(err);
+      return res.status(404).send({
+        error: "Profile not found"
+      });
+    }
     // const { token } = req.cookies;
 
     // try {
@@ -167,7 +181,7 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-      const session = dbClient.sessions.findOne({
+      const session = await dbClient.sessions.findOne({
         token
       });
       const productsCursor = dbClient.productCollection.find({
@@ -187,7 +201,7 @@ export default class UserController {
     const { token } = req.cookies;
 
     try {
-      const session = dbClient.sessions.findOne({
+      const session = await dbClient.sessions.findOne({
         token
       });
       const ordersCursor = dbClient.orderCollection.find({
@@ -219,6 +233,71 @@ export default class UserController {
       return res.status(500).send({
         error: "Server error"
       });
+    }
+  }
+
+  static async newProduct(req, res) {
+    const { title, price } = req.body;
+    const { token } = req.cookies;
+    try {
+        const session = await dbClient.sessions.findOne({
+            token
+        });
+        const product = new Product(title, price);
+        product.userId = session.userId;
+        const newProduct = await dbClient.productCollection.insertOne(product);
+        if (!newProduct) {
+            return res.status(403).send(
+                { error: `Operation failed` }
+            );
+        }
+        return res.status(201).send(
+            { Message: `Product ${title} added successfully` }
+        );
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ error: 'Server error' });
+    }
+  }
+
+  static async newOrder(req, res) {
+    const { productId } = req.body;
+    const { token } = req.cookies;
+
+    try {
+        const session = await dbClient.sessions.findOne({
+            token
+        });
+
+        const newOrder = new Order(productId, session.userId);
+        await dbClient.orderCollection.insertOne(newOrder);
+
+        return res.status(201).send({
+            Message: "Order placed successfully"
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({
+            error: "Operation failed"
+        });
+    }
+  }
+
+  static async newReview(req, res) {
+    const { orderId, feedback, stars } = req.body;
+
+    try {
+        const newReview = new Review(orderId, feedback, stars);
+        await dbClient.reviewCollection.insertOne(newReview);
+
+        return res.status(201).send({
+            Message: "Review submitted successfully"
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({
+            error: "Server error"
+        });
     }
   }
 }

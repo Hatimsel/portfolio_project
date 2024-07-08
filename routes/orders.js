@@ -4,7 +4,7 @@ import { isAuthenticated } from '../app.js';
 
 const orderRouter = express.Router();
 
-orderRouter.get('/myorders', isAuthenticated, OrderController.myOrders);
+// orderRouter.get('/myorders', isAuthenticated, OrderController.myOrders); replaced by /users/myorders
 
 orderRouter.post('/neworder', isAuthenticated, OrderController.postOrder);
 
