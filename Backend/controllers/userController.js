@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db.js';
-import { User, Product, Order, Review } from './models.js';
+import { User, Product, Order, Review, Category } from './models.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class UserController {
@@ -177,6 +177,37 @@ export default class UserController {
     }
   }
 
+  static async newCategory(req, res) {
+    const { title } = req.body;
+
+    try {
+        const category = new Category(title);
+        const newCategory = dbClient.categoryCollection.insertOne(
+            category
+        );
+        if (!newCategory) return res.status(401).send({ error: 'An error occurred' });
+
+        return res.status(201).send({ Message: `Category ${title} created successfully` });
+    } catch(err) {
+        console.error(err);
+        return res.status(500).send({ error: 'Server error' });
+    }
+  }
+
+  static async deleteCategory(req, res) {
+    const { id } = req.params;
+    try {
+        await dbClient.categoryCollection.deleteOne(
+            { _id: new ObjectId(id) }
+        )
+
+        res.status(203).send({ Message: 'Category deleted successfully'});
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: "Server error" });
+    }
+  }
+
   static async getProducts(req, res) {
     const { token } = req.cookies;
 
@@ -260,6 +291,42 @@ export default class UserController {
     }
   }
 
+  static async getProduct(req, res) {
+    const { id } = req.params;
+    const _id = new ObjectId(id);
+
+    try {
+        const product = await dbClient.productCollection.findOne(
+            { _id }
+        );
+
+        if (!product) {
+            return res.status(404).send({ error: 'Product not found' });
+        }
+
+        return res.status(200).send(product);
+    } catch(err) {
+        console.error(err);
+        return res.status(500).send({ error: 'Server error' });
+    }
+  }
+
+  static async deleteProduct(req, res) {
+    const { id } = req.params;
+
+    dbClient.productCollection.deleteOne({
+        _id: new ObjectId(id)
+    }).then ((data) => {
+        console.log(data);
+        return res.status(203).send(
+            { Message: `Product deleted successfully` }
+        );
+    }).catch((err) => {
+        console.error(err);
+        return res.status(404).send({ error: 'Product not found' });
+    })
+  }
+
   static async newOrder(req, res) {
     const { productId } = req.body;
     const { token } = req.cookies;
@@ -281,6 +348,47 @@ export default class UserController {
             error: "Operation failed"
         });
     }
+  }
+
+  static async getOrder(req, res) {
+    const { id } = req.params;
+    const { token } = req.cookies;
+
+    try {
+        const session = await dbClient.sessions.findOne({
+            token
+        });
+        dbClient.orderCollection.findOne({
+            _id: new ObjectId(id),
+            userId: session.userId
+        }).then((data) => {
+            console.log(data);
+            return res.status(200).send(data);
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(404).send({
+            error: 'Not found'
+        });
+    }
+  }
+
+  static deleteOrder(req, res) {
+    const { id } = req.params;
+
+    dbClient.orderCollection.deleteOne({
+        _id: new ObjectId(id)
+    }).then((data) => {
+        console.log(data);
+        return res.status(200).send({
+            Message: 'Order deleted successfully'
+        });
+    }).catch((err) => {
+        console.error(err);
+        return res.status(404).send({
+            error: 'Order not found'
+        });
+    });
   }
 
   static async newReview(req, res) {
