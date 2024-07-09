@@ -1,28 +1,6 @@
 import { MongoClient } from 'mongodb';
 
 class DBClient {
-    // constructor() {
-    //     this.host = process.env.DB_HOST || 'localhost';
-    //     this.port = process.env.DB_PORT || 27017;
-    //     this.database = process.env.DB_DATABASE || 'crumble';
-    //     this.url = `mongodb://${this.host}:${this.port}`;
-    //     this.isConnected = false;
-
-    //     MongoClient.connect(this.url, { useUnifiedTopology: true }, (err, client) => {
-    //         if (err) {
-    //             console.error(err);
-    //         } else {
-    //             this.isConnected = true;
-    //             console.log('Connected to MongoDB');
-    //             this.db = client.db(this.database);
-    //             this.userCollection = this.db.collection('user');
-    //             this.addressCollection = this.db.collection('address');
-    //             this.categoryCollection = this.db.collection('category');
-    //             this.productCollection = this.db.collection('product');
-    //             this.orderCollection = this.db.collection('order');
-    //         }
-    //     });
-    // }
     constructor() {
         this.host = process.env.DB_HOST || 'localhost';
         this.port = process.env.DB_PORT || 27017;
