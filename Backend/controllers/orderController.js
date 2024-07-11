@@ -1,22 +1,28 @@
-import { ObjectId } from 'mongodb';
-import dbClient from '../utils/db.js';
-import { Order } from './models.js';
+import Order from '../models/order.js';
+import redisClient from '../utils/redis.js';
 
-export default class OrderController {
-    static async postOrder(req, res) {
-        const { productId, userId } = req.body;
+export default class ProductController {
+    static async newOrder(req, res) {
+        const { productId } = req.body;
         const { token } = req.cookies;
-
+    
+        if (!productId) {
+          return res.status(400).send({
+            error: "Please provide a valid productId"
+          });
+        }
+    
         try {
-            const session = await dbClient.sessions.findOne({
-                token
-            });
+            const userId = await redisClient.get(token);
+            const newOrder = new Order({ productId, userId });
 
-            const newOrder = new Order(productId, session.userId);
-            await dbClient.orderCollection.insertOne(newOrder);
-
-            return res.status(201).send({
+            if (newOrder.save()) {
+              return res.status(201).send({
                 Message: "Order placed successfully"
+              });
+            }
+            return res.status(400).send({
+              Message: "Something went wrong"
             });
         } catch (err) {
             console.error(err);
@@ -25,22 +31,20 @@ export default class OrderController {
             });
         }
     }
-
+    
     static async getOrder(req, res) {
         const { id } = req.params;
-        const { token } = req.cookies;
-
+        // const { token } = req.cookies;
+    
         try {
-            const session = await dbClient.sessions.findOne({
-                token
-            });
-            dbClient.orderCollection.findOne({
-                _id: new ObjectId(id),
-                userId: session.userId
-            }).then((data) => {
-                console.log(data);
-                return res.status(200).send(data);
-            });
+            // const userId = await redisClient.get(token);
+            // this should be found by id and userId => fixing that later
+            const order = await Order.findOne({ _id: id });
+            if (!order) {
+              return res.status(404).send({ error: 'Order not found' });
+            }
+    
+            return res.status(200).send(order);
         } catch (err) {
             console.error(err);
             return res.status(404).send({
@@ -48,59 +52,40 @@ export default class OrderController {
             });
         }
     }
-
-    static async myOrders(req, res) {
-        const { token } = req.cookies;
-
-        try {
-            const session = await dbClient.sessions.findOne({
-                token
-            });
-            // const user = await dbClient.userCollection.findOne({
-            //     _id: session.userId
-            // });
-
-            const ordersCursor = dbClient.orderCollection.find({
-                userId: session.userId
-            });
-
-            const orders = await ordersCursor.toArray();
-
-            return res.status(200).send(orders);
-        } catch (err) {
-            console.error(err);
-            return res.status(500).send({
-                error: "Server Error"
-            });
-        }
-        // const orders = dbClient.orderCollection.find();
-        // orders.toArray()
-        //     .then((data) => {
-        //         console.log(data);
-        //         return res.status(200).send(data);
-        //     }).catch((err) => {
-        //         console.error(err);
-        //         return res.send(404).send({
-        //             error: 'Not found'
-        //         });
-        //     });
-    }
-
-    static deleteOrder(req, res) {
+    
+    static async deleteOrder(req, res) {
         const { id } = req.params;
 
-        dbClient.orderCollection.deleteOne({
-            _id: new ObjectId(id)
-        }).then((data) => {
-            console.log(data);
-            return res.status(200).send({
-                Message: 'Order deleted successfully'
-            });
-        }).catch((err) => {
-            console.error(err);
-            return res.status(404).send({
-                error: 'Order not found'
-            });
+        const deleted = await Order.deleteOne({ _id: id });
+        if (deleted.deletedCount > 0) {
+          return res.status(200).send({
+            Message: 'Order deleted successfully'
+          });
+        }
+        return res.status(404).send({
+          error: 'Order not found'
         });
+    }
+    
+    static async getOrders(req, res) {
+        const { token } = req.cookies;
+    
+        try {
+          const userId = await redisClient.get(token);
+          const orders = await Order.find({ userId });
+    
+          if (orders) {
+            return res.status(200).send(orders);
+          }
+    
+          return res.status(404).send({
+            error: "No order found"
+          });
+        } catch (err) {
+          console.error(err);
+          return res.status(500).send({
+            error: "Server error"
+          });
+        }
     }
 }

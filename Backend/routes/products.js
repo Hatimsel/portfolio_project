@@ -1,14 +1,15 @@
 import express from 'express';
-import ProductController from '../controllers/productConstroller.js';
+import ProductController from '../controllers/productController.js';
+import { isAuthenticated } from '../middleware/auth.js';
 
 const productRouter = express.Router();
 
-productRouter.get('/', ProductController.getAll);
+productRouter.get('/', isAuthenticated, ProductController.getProducts);
 
-// productRouter.post('/newproduct', isAuthenticated, ProductController.postProduct); migrated to userRouter
+productRouter.get('/:id', isAuthenticated, ProductController.getProduct);
 
-productRouter.get('/:id', ProductController.getProduct);
+productRouter.post('/new', isAuthenticated, ProductController.newProduct);
 
-// productRouter.delete('/:id', isAuthenticated, ProductController.deleteProduct);
+productRouter.delete('/:id', isAuthenticated, ProductController.deleteProduct);
 
 export default productRouter;

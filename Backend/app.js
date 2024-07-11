@@ -1,52 +1,28 @@
 import express from 'express';
-import { ObjectId } from 'mongodb';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import connectDB from './utils/db.js';
+import router from './routes/auth.js';
 import userRouter from './routes/users.js';
-import categoryRouter from './routes/categories.js';
 import productRouter from './routes/products.js';
 import orderRouter from './routes/orders.js';
-import dbClient from './utils/db.js';
-import redisClient from './utils/redis.js';
+import categoryRouter from './routes/categories.js';
+import reviewRouter from './routes/reviews.js';
 
 const app = express();
+connectDB();
 
 const host = process.env.DB_HOST || 'localhost';
 const port = process.env.DB_PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use('/', router);
 app.use('/users', userRouter);
-app.use('/categories', categoryRouter);
-app.use('/products', productRouter);
-app.use('/orders', orderRouter);
-
-export async function isAuthenticated(req, res, next) {
-    const { token } = req.cookies;
-
-    try {
-        const userId = await redisClient.get(token);
-        // const session = await dbClient.db.collection('sessions').findOne({
-        //     token
-        // });
-        if (!userId) return res.status(403).send({
-            error: "Unauthorized"
-        });
-        const user = await dbClient.userCollection.findOne(
-            { _id: new ObjectId(userId) },
-            { projection: { password: 0 } }
-        );
-        if (!user) return res.status(403).send({
-            error: "Unauthorized"
-        });
-        next();
-    } catch (err) {
-        console.error(err);
-        res.status(403).send({
-            error: "Forbidden"
-        });
-    }
-}
+app.use('/users/products', productRouter);
+app.use('/users/orders', orderRouter);
+app.use('/users/reviews', reviewRouter);
+app.use('/users/categories', categoryRouter);
 
 app.get('/home', (req, res) => res.send('Welcome to Crumble!'));
 

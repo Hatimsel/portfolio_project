@@ -1,15 +1,15 @@
 import express from 'express';
 import OrderController from '../controllers/orderController.js';
-import { isAuthenticated } from '../app.js';
+import { isAuthenticated } from '../middleware/auth.js';
 
 const orderRouter = express.Router();
 
-// orderRouter.get('/myorders', isAuthenticated, OrderController.myOrders); Migrated to userRouter
+orderRouter.get('/', isAuthenticated, OrderController.getOrders);
 
-// orderRouter.post('/neworder', isAuthenticated, OrderController.postOrder);
+orderRouter.post('/new', isAuthenticated, OrderController.newOrder);
 
-// orderRouter.get('/:id', isAuthenticated, OrderController.getOrder);
+orderRouter.get('/:id', isAuthenticated, OrderController.getOrder);
 
-// orderRouter.delete('/:id', isAuthenticated, OrderController.deleteOrder);
+orderRouter.delete('/:id', OrderController.deleteOrder);
 
 export default orderRouter;

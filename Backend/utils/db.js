@@ -1,39 +1,19 @@
-import { MongoClient } from 'mongodb';
+import mongoose from "mongoose";
+import dotenv from 'dotenv';
 
-class DBClient {
-    constructor() {
-        this.host = process.env.DB_HOST || 'localhost';
-        this.port = process.env.DB_PORT || 27017;
-        this.database = process.env.DB_DATABASE || 'crumble';
-        this.url = `mongodb://${this.host}:${this.port}`;
-        this.isConnected = false;
-        this.client = null;
-        this.db = null;
+dotenv.config();
+
+const connectDB = async () => {
+    try {
+      await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log('MongoDB connected');
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
     }
-
-    async connect() {
-        try {
-            this.client = await MongoClient.connect(this.url, { useUnifiedTopology: true });
-            this.isConnected = true;
-            this.db = this.client.db(this.database);
-            this.sessions = this.db.collection('sessions');
-            this.userCollection = this.db.collection('user');
-            this.addressCollection = this.db.collection('address');
-            this.categoryCollection = this.db.collection('category');
-            this.productCollection = this.db.collection('product');
-            this.orderCollection = this.db.collection('order');
-            this.reviewCollection = this.db.collection('review');
-        } catch (err) {
-            console.error('Failed to connect to MongoDB:', err);
-        }
-    }
-}
-
-const dbClient = new DBClient();
-dbClient.connect().then(() => {
-    console.log('Connection status:', dbClient.isConnected);
-}).catch(err => {
-    console.error('Error during connection:', err);
-});
-
-export default dbClient;
+};
+  
+export default connectDB;
