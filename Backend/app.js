@@ -8,6 +8,12 @@ import productRouter from './routes/products.js';
 import orderRouter from './routes/orders.js';
 import categoryRouter from './routes/categories.js';
 import reviewRouter from './routes/reviews.js';
+import restaurantRouter from './routes/restaurants.js';
+import customerRouter from './routes/customers.js';
+import deliveryRouter from './routes/deliveries.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 connectDB();
@@ -23,6 +29,9 @@ app.use('/users/products', productRouter);
 app.use('/users/orders', orderRouter);
 app.use('/users/reviews', reviewRouter);
 app.use('/users/categories', categoryRouter);
+app.use('/restaurants', restaurantRouter);
+app.use('/customers', customerRouter);
+app.use('/delivery', deliveryRouter);
 
 app.get('/home', (req, res) => res.send('Welcome to Crumble!'));
 

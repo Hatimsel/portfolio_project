@@ -91,7 +91,7 @@ export default class UserController {
         }
     }
 
-    static async updateUser(req, res) {}
+    static async updateUser() {}
 
     static async deleteUser(req, res) {
         const { token } = req.cookies;
