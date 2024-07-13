@@ -12,4 +12,6 @@ userRouter.delete('/deleteprofile', isAuthenticated, UserController.deleteUser);
 
 userRouter.get('/', isAuthenticated, UserController.allUsers);
 
+userRouter.post('/addaddress', isAuthenticated, UserController.addAddress);
+
 export default userRouter;

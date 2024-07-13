@@ -10,6 +10,6 @@ orderRouter.post('/new', isAuthenticated, OrderController.newOrder);
 
 orderRouter.get('/:id', isAuthenticated, OrderController.getOrder);
 
-orderRouter.delete('/:id', OrderController.deleteOrder);
+orderRouter.delete('/:id', isAuthenticated, OrderController.deleteOrder);
 
 export default orderRouter;

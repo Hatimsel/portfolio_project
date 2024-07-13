@@ -2,6 +2,9 @@ import bcrypt from 'bcrypt';
 import User from '../models/user.js';
 import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../utils/redis.js';
+import NodeGeocoder from 'node-geocoder';
+
+const geocoder = NodeGeocoder({ provider: 'google', apiKey: process.env.API_KEY });
 
 export default class UserController {
     static async register(req, res) {
@@ -121,6 +124,57 @@ export default class UserController {
         } catch (err) {
             console.error(err);
             return res.status(500).send({ error: "Server Error" });
+        }
+    }
+
+    static async addAddress(req, res) {
+        const { token } = req.cookies;
+    
+        try {
+          const userId = await redisClient.get(token);
+    
+          if (!userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+          }
+    
+          const user = await User.findById(userId);
+    
+          if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+          }
+    
+          const { address } = req.body;
+    
+          if (!address) {
+            return res.status(400).json({ error: 'Enter a valid address' });
+          }
+    
+          const [geoResult] = await geocoder.geocode(address);
+    
+          if (geoResult) {
+            user.address = {
+              streetNumber: geoResult.streetNumber,
+              streetName: geoResult.streetName,
+              city: geoResult.city,
+              state: geoResult.state,
+              country: geoResult.country,
+              countryCode: geoResult.countryCode,
+              zipcode: geoResult.zipcode,
+              formattedAddress: geoResult.formattedAddress,
+              latitude: geoResult.latitude,
+              longitude: geoResult.longitude,
+              provider: geoResult.provider,
+            };
+    
+            await user.save();
+    
+            return res.status(200).json({ message: 'Address added successfully', user });
+          } else {
+            return res.status(400).json({ error: 'Geocoding failed' });
+          }
+        } catch (error) {
+          console.error('Error updating address:', error);
+          return res.status(500).json({ error: 'Server error' });
         }
     }
 }

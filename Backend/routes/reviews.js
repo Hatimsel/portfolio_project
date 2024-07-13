@@ -6,6 +6,6 @@ const reviewRouter = express.Router();
 
 reviewRouter.post('/new', isAuthenticated, ReviewController.newReview);
 
-reviewRouter.get('/', isAuthenticated, ReviewController.getReviews);
+reviewRouter.get('/myreviews', isAuthenticated, ReviewController.getReviews);
 
 export default reviewRouter;
