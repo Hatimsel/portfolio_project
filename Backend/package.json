@@ -1,33 +1,24 @@
 {
-  "name": "crumble",
+  "name": "resaback",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "start": "nodemon ./app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
-    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "firebase-admin": "^12.2.0",
-    "mongoose": "^8.5.0",
-    "node-geocoder": "^4.3.0",
-    "redis": "^4.6.15",
-    "socket.io": "^4.7.5",
-    "uuid": "^10.0.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.6.0",
-    "eslint": "^9.6.0",
-    "globals": "^15.8.0",
-    "nodemon": "^3.1.4"
+    "jsonwebtoken": "^9.0.2",
+    "mongoos": "^0.0.1-security",
+    "mongoose": "^8.3.0",
+    "nodemon": "^3.1.0"
   }
 }
