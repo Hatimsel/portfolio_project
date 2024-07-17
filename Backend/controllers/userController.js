@@ -1,11 +1,11 @@
-const UserServices = require("../services/user_services");
+const UserServices = require("../services/userServices");
 
 exports.createUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
         const result = await UserServices.createUser(email, password);
-        return res.json(result);
+        return res.status(201).json(result);
     } catch (error) {
         return res.status(500).json({
             status: false,
@@ -20,7 +20,7 @@ exports.loginUser = async (req, res) => {
 
     try {
         const { token, user } = await UserServices.loginUser(email, password);
-        return res.json({ token, user });
+        return res.status(200).json({ token, user });
     } catch (error) {
         return res.status(400).json({
             status: false,
@@ -33,7 +33,7 @@ exports.deleteUser = async (req, res) => {
     const { email } = req.body;
 
     try {
-        const { token, msg } = await UserServices.deleteUser(email);
+        const { msg } = await UserServices.deleteUser(email);
 
         return res.status(200).json({
             message: msg
