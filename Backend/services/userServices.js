@@ -13,7 +13,7 @@ class UserServices {
         } catch (error) {
             console.error("Cannot create user:", error);
             throw error;
-        }
+        } 
     }
 
     async loginUser(email, password) {

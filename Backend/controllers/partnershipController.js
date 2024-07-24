@@ -4,7 +4,6 @@ exports.submitRequest = async (req, res) => {
   const { establishmentName, establishmentType, contactName, role, email, phone } = req.body;
 
   try {    
-    // Create a new partnership request instance
     const newRequest = new PartnershipRequest({
       establishmentName,
       establishmentType,
@@ -14,7 +13,6 @@ exports.submitRequest = async (req, res) => {
       phone
     });
 
-    // Save the request to the database
     await newRequest.save();
 
     return res.status(201).send({

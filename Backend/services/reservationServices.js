@@ -18,13 +18,7 @@ const addReservation = async (reservationData) => {
     throw new Error('Failed to save reservation: ' + err.message);
   }
 };
-/*
-class Getreserve{
-  static async getReservations(userId) {
-    const getreservations = await Reservation.find({ user: userId });
-    return getreservations;
-  }
-}
+
 module.exports = {
   addReservation,
-};*/
+};

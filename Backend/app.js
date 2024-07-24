@@ -12,17 +12,6 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use('/', userRouter);
 
-// app.post('/login', async (req, res) => {
-//     const { email, password } = req.body;
-//     const user = await User.findOne({ email });
-    
-//     if (!user || !bcrypt.compareSync(password, user.password)) {
-//         return res.status(401).send({ error: "Authentication failed" });
-//     }
-    
-//     return res.send({ status: "success", userId: user._id.toString() });
-// });
-
 app.use('/api', partnershipRoutes);
 app.use('/api', reservationRoutes);
 

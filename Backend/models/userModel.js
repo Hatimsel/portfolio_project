@@ -12,11 +12,3 @@ const userSchema = new Schema({
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
-//reservations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reservation' }];
-
-// const reservationSchema = new Schema({
-//     user: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'User', required: true
-//     },
-// });

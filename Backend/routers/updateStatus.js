@@ -1,4 +1,3 @@
-// Route for updating user status along with optional email and password
 router.patch('/updateStatus/:userId', async (req, res) => {
     const { status, email, password } = req.body;
     const { userId } = req.params;
