@@ -8,28 +8,41 @@ Chat rooms
 Responsive design
 
 Technologies Used:
+
 Backend: Node.js, Express
+
 Frontend: React
+
 Chat API: ChatEngine API
+
 Styling: CSS
 
 Getting Started:
+
 Prerequisites:
 
 Make sure you have the following installed on your machine:
+
 Node.js
+
 npm (Node Package Manager)
 
 Installation:
+
 Clone the repository
 
 bash
+
 Copy code
+
 git clone https://github.com/Hatimsel/portfolio_project
+
 cd portfolio_project
 
 Install dependencies:
+
 bash
+
 Copy code
 
 # For the backend
@@ -39,6 +52,7 @@ cd backend
 npm install
 
 # For the frontend
+
 cd ../frontend
 
 npm install
