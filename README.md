@@ -2,34 +2,56 @@ Real-Time Chat App
 Welcome to our real-time chat application! This project utilizes Node.js and Express for the backend, React for the frontend, and ChatEngine API to streamline the chat functionalities.
 
 Features
+
 Real-time messaging
+
 User authentication
+
 Chat rooms
+
 Responsive design
 
 Technologies Used
+
 Backend: Node.js, Express
+
 Frontend: React
+
 Chat API: ChatEngine API
+
 Styling: CSS
 
 Getting Started
+
 Prerequisites
+
 Make sure you have the following installed on your machine:
 
 Node.js
 npm (Node Package Manager)
+
 Installation
+
 Clone the repository
+
 bash
+
 Copy code
+
 git clone https://github.com/Hatimsel/portfolio_project
+
 cd portfolio_project
+
 Install dependencies
+
 bash
+
 Copy code
+
 # For the backend
+
 cd backend
+
 npm install
 
 # For the frontend
