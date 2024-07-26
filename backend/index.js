@@ -26,4 +26,8 @@ app.post("/authenticate", async (req, res) => {
   }
 });
 
-app.listen(3001);
+const port = process.env.PORT;
+
+app.listen(port, () => {
+  console.log(`Server starting on port ${port}`);
+});
