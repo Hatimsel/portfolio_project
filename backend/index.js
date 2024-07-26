@@ -2,12 +2,17 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
+import connectDB from './utils/db.js';
+import userRouter from './routes/users.js';
 
 dotenv.config();
+
+connectDB();
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: true }));
+app.use('/users', userRouter);
 
 app.post("/authenticate", async (req, res) => {
   const { username, password } = req.body;
