@@ -6,65 +6,65 @@ dotenv.config();
 
 export default class OpenAiController {
     static async text(req, res) {
-        const { text, activeChatId } = req.body;
-
-        try {      
-            const response = await openai.createCompletion({
-                model: "text-davinci-003",
-                prompt: text,
-                temperature: 0.5,
-                max_tokens: 2048,
-                top_p: 1,
-                frequency_penalty: 0.5,
-                presence_penalty: 0,
+        try {
+            const { text, activeChatId } = req.body;
+        
+            const response = await openai.createChatCompletion({
+              model: "gpt-3.5-turbo",
+              messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                { role: "user", content: text },
+              ],
             });
         
             await axios.post(
-                `https://api.chatengine.io/chats/${activeChatId}/messages/`,
-                { text: response.data.choices[0].text },
-                {
+              `https://api.chatengine.io/chats/${activeChatId}/messages/`,
+              { text: response.data.choices[0].message.content },
+              {
                 headers: {
-                    "Project-ID": process.env.PROJECT_ID,
-                    "User-Name": process.env.BOT_USER_NAME,
-                    "User-Secret": process.env.BOT_USER_SECRET,
+                  "Project-ID": process.env.PROJECT_ID,
+                  "User-Name": process.env.BOT_USER_NAME,
+                  "User-Secret": process.env.BOT_USER_SECRET,
                 },
-                }
+              }
             );
         
-            res.status(200).json({ text: response.data.choices[0].text });
+            res.status(200).json({ text: response.data.choices[0].message.content });
         } catch (error) {
-            console.error("error", error);
+            console.error("error", error.response.data.error);
             res.status(500).json({ error: error.message });
         }
     }
 
     static async code(req, res) {
-        const { text, activeChatId } = req.body;
-
         try {
-            const response = await openai.createCompletion({
-                model: "code-davinci-002",
-                prompt: text,
-                temperature: 0.5,
-                max_tokens: 2048,
-                top_p: 1,
-                frequency_penalty: 0.5,
-                presence_penalty: 0,
+            const { text, activeChatId } = req.body;
+        
+            const response = await openai.createChatCompletion({
+              model: "gpt-3.5-turbo",
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "You are an assistant coder who responds with only code and no explanations.",
+                },
+                { role: "user", content: text },
+              ],
             });
         
             await axios.post(
-                `https://api.chatengine.io/chats/${activeChatId}/messages/`,
-                { text: response.data.choices[0].text },
-                {
+              `https://api.chatengine.io/chats/${activeChatId}/messages/`,
+              { text: response.data.choices[0].message.content },
+              {
                 headers: {
-                    "Project-ID": process.env.PROJECT_ID,
-                    "User-Name": process.env.BOT_USER_NAME,
-                    "User-Secret": process.env.BOT_USER_SECRET,
+                  "Project-ID": process.env.PROJECT_ID,
+                  "User-Name": process.env.BOT_USER_NAME,
+                  "User-Secret": process.env.BOT_USER_SECRET,
                 },
-                }
+              }
             );
         
-            res.status(200).json({ text: response.data.choices[0].text });
+            res.status(200).json({ text: response.data.choices[0].message.content });
         } catch (error) {
             console.error("error", error.response.data.error);
             res.status(500).json({ error: error.message });
@@ -72,20 +72,22 @@ export default class OpenAiController {
     }
 
     static async assist(req, res) {
-        const { text } = req.body;
-
-        try {      
-            const response = await openai.createCompletion({
-                model: "text-davinci-003",
-                prompt: `Finish my thought: ${text}`,
-                temperature: 0.5,
-                max_tokens: 1024,
-                top_p: 1,
-                frequency_penalty: 0.5,
-                presence_penalty: 0,
+        try {
+            const { text } = req.body;
+        
+            const response = await openai.createChatCompletion({
+              model: "gpt-3.5-turbo",
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "You are a helpful assistant that serves to only complete user's thoughts or sentences.",
+                },
+                { role: "user", content: `Finish my thought: ${text}` },
+              ],
             });
         
-            res.status(200).json({ text: response.data.choices[0].text });
+            res.status(200).json({ text: response.data.choices[0].message.content });
         } catch (error) {
             console.error("error", error);
             res.status(500).json({ error: error.message });
