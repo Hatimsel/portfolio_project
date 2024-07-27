@@ -4,15 +4,20 @@ import axios from "axios";
 import dotenv from "dotenv";
 import connectDB from './utils/db.js';
 import userRouter from './routes/users.js';
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
 
 connectDB();
 
+// GLOBAL CONFIGURATIONS
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: true }));
+
+// ROUTES 
 app.use('/users', userRouter);
+app.use("/auth", authRoutes);
 
 app.post("/authenticate", async (req, res) => {
   const { username, password } = req.body;
@@ -31,7 +36,8 @@ app.post("/authenticate", async (req, res) => {
   }
 });
 
-const port = process.env.PORT;
+// SERVER CONFIGURATION
+const port = process.env.PORT || 9000;
 
 app.listen(port, () => {
   console.log(`Server starting on port ${port}`);

@@ -17,13 +17,14 @@ const AuthPage = (props) => {
     return (
       <div className="background">
         <form onSubmit={onSubmit} className="form-card">
-          <div className="form-title">Welcome 👋</div>
+        <div className="form-title">Welcome <img src="/blue.png" alt="App Logo" style={{ width: '100px', height: '100px', verticalAlign: 'middle' }} /></div>
+          {/* <div className="form-title">Welcome 👋</div> */}
   
           <div className="form-subtitle">Set a username and a password to get started</div>
   
           <div className="auth">
             <div className="auth-label">Username</div>
-            <input className="auth-input" name="username" />
+            <input className="auth-input" name="username" required />
             <div className="password-label">Password</div>
             <input className="auth-input" name="password" type="password" required />
             <button className="auth-button" type="submit">
