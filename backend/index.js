@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from './utils/db.js';
 import userRouter from './routes/users.js';
 import authRoutes from "./routes/auth.js";
+import OpenAI from "openai";
 
 dotenv.config();
 
@@ -14,6 +15,11 @@ connectDB();
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: true }));
+
+// OPEN AI CONFIGURATION
+export const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 // ROUTES 
 app.use('/users', userRouter);

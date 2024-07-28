@@ -1,7 +1,13 @@
 import axios from "axios";
 
 export default class AuthController {
+    /* 
+    AuthController class:
+    Manages authentication logic
+    Provides functionality for login and signup
+    */
     static async login(req, res) {
+        // Handles login logic
         const { username, password } = req.body;
 
         try {
@@ -24,6 +30,7 @@ export default class AuthController {
     }
 
     static async signUp(req, res) {
+        // Handles signup logic
         const { username, password } = req.body;
 
         try {      

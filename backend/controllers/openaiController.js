@@ -5,11 +5,18 @@ import { openai } from "../index.js";
 dotenv.config();
 
 export default class OpenAiController {
+    /*
+    OpenAi Controller class:
+    Manages all the logic of AI integration
+    Provides three possible bots:
+    Assistant ; Coder ; Advanced assistant
+    */
     static async text(req, res) {
+      // Provides Assistant Bot
         try {
             const { text, activeChatId } = req.body;
-        
-            const response = await openai.createChatCompletion({
+
+            const response = await openai.chat.completions.create({
               model: "gpt-3.5-turbo",
               messages: [
                 { role: "system", content: "You are a helpful assistant." },
@@ -17,9 +24,10 @@ export default class OpenAiController {
               ],
             });
         
+            const aiResponse = response.choices[0].message.content;
             await axios.post(
               `https://api.chatengine.io/chats/${activeChatId}/messages/`,
-              { text: response.data.choices[0].message.content },
+              { text: aiResponse },
               {
                 headers: {
                   "Project-ID": process.env.PROJECT_ID,
@@ -29,18 +37,19 @@ export default class OpenAiController {
               }
             );
         
-            res.status(200).json({ text: response.data.choices[0].message.content });
+            res.status(200).json({ text: response.choices[0].message.content });
         } catch (error) {
-            console.error("error", error.response.data.error);
+            console.error("error", error);
             res.status(500).json({ error: error.message });
         }
     }
 
     static async code(req, res) {
+      // Provides Coder Bot
         try {
             const { text, activeChatId } = req.body;
         
-            const response = await openai.createChatCompletion({
+            const response = await openai.chat.completions.create({
               model: "gpt-3.5-turbo",
               messages: [
                 {
@@ -54,7 +63,7 @@ export default class OpenAiController {
         
             await axios.post(
               `https://api.chatengine.io/chats/${activeChatId}/messages/`,
-              { text: response.data.choices[0].message.content },
+              { text: response.choices[0].message.content },
               {
                 headers: {
                   "Project-ID": process.env.PROJECT_ID,
@@ -64,18 +73,19 @@ export default class OpenAiController {
               }
             );
         
-            res.status(200).json({ text: response.data.choices[0].message.content });
+            res.status(200).json({ text: response.choices[0].message.content });
         } catch (error) {
-            console.error("error", error.response.data.error);
+            console.error("error", error.response.error);
             res.status(500).json({ error: error.message });
         }
     }
 
     static async assist(req, res) {
+      // Provides Advanced Assistant Bot
         try {
             const { text } = req.body;
         
-            const response = await openai.createChatCompletion({
+            const response = await openai.chat.completions.create({
               model: "gpt-3.5-turbo",
               messages: [
                 {
@@ -87,7 +97,7 @@ export default class OpenAiController {
               ],
             });
         
-            res.status(200).json({ text: response.data.choices[0].message.content });
+            res.status(200).json({ text: response.choices[0].message.content });
         } catch (error) {
             console.error("error", error);
             res.status(500).json({ error: error.message });
