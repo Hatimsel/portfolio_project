@@ -1,4 +1,5 @@
 import React from "react";
+
 import { ChatBubbleLeftRightIcon, PhoneIcon } from "@heroicons/react/24/solid";
 
 const CustomerHeader = ({ chat }) => {
@@ -16,7 +17,8 @@ const CustomerHeader = ({ chat }) => {
           <p className="header-text">no chat selected</p>
         )}
       </div>
-    </div>
+   
+ </div>
   );
 };
 
