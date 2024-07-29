@@ -3,7 +3,9 @@ import {
   useMultiChatLogic,
   MultiChatSocket,
   MultiChatWindow,
-} from "react-chat-engine-advanced";
+}
+
+ from "react-chat-engine-advanced";
 import Header from "@/components/customHeader";
 import StandardMessageForm from "@/components/customMessageForms/StandardMessageForm";
 import Ai from "@/components/customMessageForms/Ai";
@@ -40,6 +42,7 @@ const Chat = ({ user, secret }) => {
           );
         }}
       />
+
     </div>
   );
 };
