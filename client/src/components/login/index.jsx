@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import { usePostLoginMutation, usePostSignUpMutation } from "@/state/api";
 
 const Login = ({ setUser, setSecret }) => {
@@ -64,6 +65,7 @@ const Login = ({ setUser, setSecret }) => {
             </button>
           )}
         </div>
+
       </div>
     </div>
   );
