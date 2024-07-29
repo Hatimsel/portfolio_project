@@ -1,115 +1,78 @@
 Real-Time Chat App
-Welcome to our real-time chat application! This project utilizes Node.js and Express for the backend, React for the frontend, and ChatEngine API to streamline the chat functionalities.
+
+Welcome to our advanced real-time chat application! This project leverages Node.js and Express for the backend, React for the frontend, and ChatEngine API to power the chat functionalities. Our chat app now includes AI-driven features, such as Assistant Bot, Coder Bot, and Autocomplete Bot, and is designed to be offered as a SaaS product for seamless integration into other business applications.
 
 Features:
-Real-time messaging
-User authentication
-Chat rooms
-Responsive design
+
+Real-time Messaging: Engage in live, instantaneous conversations.
+User Authentication: Secure and personalized access.
+Chat Rooms: Create and join dynamic chat rooms.
+AI Integration: Interact with Assistant, Coder, and Autocomplete Bots.
+Responsive Design: Optimized for various devices.
 
 Technologies Used:
-
 Backend: Node.js, Express
-
 Frontend: React
-
 Chat API: ChatEngine API
-
+AI Integration: Custom AI Bots
 Styling: CSS
 
 Getting Started:
-
 Prerequisites:
-
-Make sure you have the following installed on your machine:
+Ensure you have the following installed on your machine:
 
 Node.js
-
 npm (Node Package Manager)
-
 Installation:
+Clone the repository:
 
-Clone the repository
-
-bash
-
-Copy code
+Open your terminal:
 
 git clone https://github.com/Hatimsel/portfolio_project
-
 cd portfolio_project
-
 Install dependencies:
 
-bash
+For the backend:
 
-Copy code
-
-# For the backend
-
-cd backend
-
+cd server
 npm install
 
-# For the frontend
+For the frontend:
 
-cd ../frontend
-
+cd ../client
 npm install
 
-Set up ChatEngine API
+Set up ChatEngine API:
 
 Create an account on ChatEngine.
-
 Create a new project and obtain the Project ID and Private Key.
 
-Configure environment variables
+Configure environment variables:
 
-Create a .env file in the server directory and add the following:
-
-env
-
-Copy code
+Create a .env file in the backend directory and add the following:
 
 CHATENGINE_PROJECT_ID=your_project_id
-
 CHATENGINE_PRIVATE_KEY=your_private_key
 
 Running the Application:
+Start the backend server:
 
-Start the backend server
-
-bash
-
-Copy code
-
-cd backend
-
+cd server
 npm start
-
-The backend server will be running on http://localhost:3001.
+The backend server will be running on http://localhost:9000.
 
 Start the frontend:
 
-bash
-
-Copy code
-
-cd ../frontend
-
+cd ../client
 npm run dev
-
 The frontend will be running on http://localhost:5173.
 
 Usage:
 
 Register an account: Create a new account or log in with an existing one.
-
-Create/Join chat rooms: Start a new chat room or join existing ones.
-
+Create/Join chat rooms: Start new chat rooms and add members or join existing ones.
 Send messages: Enjoy real-time messaging with other users.
+Interact with AI Bots: Utilize the Assistant, Coder, and Autocomplete Bots for enhanced interactions.
 
 Contributing:
-
 We welcome contributions! If you have any ideas or suggestions, feel free to open an issue or create a pull request.
-
